@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/inicio"
+        android:title="Inicio"
+        app:showAsAction="never"
+        android:icon="@drawable/ic_inicio"/>
+    <item
+        android:id="@+id/subirImagen"
+        android:title="Subir imagen"
+        app:showAsAction="never"
+        android:icon="@drawable/ic_subir_imagen"/>
+    <item
+        android:id="@+id/perfilUsuario"
+        android:title="Perfil"
+        app:showAsAction="never"
+        android:icon="@drawable/ic_perfil"/>
+
+</menu>
