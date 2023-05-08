@@ -35,6 +35,7 @@ class subirImagenFragment : Fragment() {
 
 
     private fun abrirGaleria() {
+        // TODO: falta establecer que solo se puede seleccionar imagenes de la galeria con el media en el intent
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         resuladoGaleria.launch(intent)
