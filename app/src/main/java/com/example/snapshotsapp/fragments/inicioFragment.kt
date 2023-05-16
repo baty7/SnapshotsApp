@@ -1,6 +1,6 @@
 package com.example.snapshotsapp.fragments
 
-import android.content.Context
+
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,7 +17,6 @@ import com.example.snapshotsapp.databinding.FragmentInicioBinding
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.database.FirebaseDatabase
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.firebase.auth.FirebaseAuth
 
 
 class inicioFragment : Fragment() {
@@ -102,14 +101,10 @@ class inicioFragment : Fragment() {
     //ViewHolder
     inner class SnapshotsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = ElementosSnapshotsBinding.bind(view)
-
         fun setListener(snapshot: Snapshots) {
             //Boton delete para eliminar la foto
             //binding.btnBorrar.setOnClickListener // Metodo que borra la foto de firebaseStorage{ deleteSnapshot(snapshot) }
             //Boton de me gusta en la foto
-            /*binding.cbLike.setOnCheckedChangeListener { compoundButton, checked ->
-                setLike(snapshot, checked)
-            }*/
         }
     }
 

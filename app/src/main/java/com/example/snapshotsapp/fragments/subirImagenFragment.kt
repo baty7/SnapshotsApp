@@ -1,18 +1,31 @@
 package com.example.snapshotsapp.fragments
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.snapshotsapp.R
+import androidx.activity.result.contract.ActivityResultContracts
+import com.example.snapshotsapp.MainActivity.Companion.PATH_SNAPSHOTS
+import com.example.snapshotsapp.Snapshots
 import com.example.snapshotsapp.databinding.FragmentSubirImagenBinding
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 
 class subirImagenFragment : Fragment() {
     private lateinit var binding: FragmentSubirImagenBinding
+    private lateinit var storageReference: StorageReference
+    private lateinit var databaseReference: DatabaseReference
+    private var imagen: Uri? = null
     val PICK_IMAGE = 1
 
 
@@ -28,17 +41,75 @@ class subirImagenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.ibSelect.setOnClickListener { abrirGaleria() }
+        binding.btnPost.setOnClickListener { publicarFoto() }
+        configuracionFirebase()
 
     }
-    // TODO: implementar resultado de la galeria
-    private var resuladoGaleria = registerForActivityResult()
 
+    private fun configuracionFirebase() {
+        storageReference = FirebaseStorage.getInstance().reference.child(PATH_SNAPSHOTS)
+        databaseReference = FirebaseDatabase.getInstance().reference.child(PATH_SNAPSHOTS)
+    }
+
+    private fun publicarFoto() {
+        //TODO: Implementar toda la logica de la publicación de la foto inicializando storage
+        binding.progressBar.visibility = View.VISIBLE
+        val key = databaseReference.push().key
+        //val storageReference = FirebaseStorage.getInstance().reference.child(PATH_SNAPSHOTS).child(key!!)
+        val storageReference = storageReference.child(PATH_SNAPSHOTS)
+            .child(FirebaseAuth.getInstance().currentUser!!.uid)
+            .child(key!!)
+        if (imagen != null) {
+            storageReference.putFile(imagen!!)
+                .addOnProgressListener {
+                    val progress = (100 * it.bytesTransferred / it.totalByteCount).toDouble()
+                    binding.progressBar.progress = progress.toInt()
+                    binding.tvMessage.text = "$progress%"
+                    //binding.progressBar.visibility = View.VISIBLE
+                }
+                .addOnCompleteListener {
+                    binding.progressBar.visibility = View.INVISIBLE
+                }
+                .addOnSuccessListener {
+                    Snackbar.make(
+                        binding.root, "Foto publicada correctamente", Snackbar.LENGTH_LONG
+                    ).show()
+                    it.storage.downloadUrl.addOnSuccessListener {
+                        guardarFotoBaseDatos(key!!, it.toString(), binding.etTitle.text.toString())
+                    }
+                }
+                .addOnFailureListener {
+                    Snackbar.make(
+                        binding.root, "Error al publicar la foto", Snackbar.LENGTH_LONG
+                    ).show()
+                }
+
+        }
+    }
+
+    private var resultadoGaleria =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                imagen = result.data?.data
+                binding.ivPhoto.setImageURI(imagen)
+                binding.tilTitle.visibility = View.VISIBLE
+                binding.tvMessage.text = "Por favor añada un titulo"
+            }
+        }
 
     private fun abrirGaleria() {
-        // TODO: falta establecer que solo se puede seleccionar imagenes de la galeria con el media en el intent
-        val intent = Intent(Intent.ACTION_PICK)
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.type = "image/*"
-        resuladoGaleria.launch(intent)
+        resultadoGaleria.launch(intent)
+
+    }
+
+    private fun guardarFotoBaseDatos(key: String, url: String, titulo: String) {
+        val foto = Snapshots(url, titulo)
+        databaseReference.child(key).setValue(foto)
+
     }
 
 }
+
+
