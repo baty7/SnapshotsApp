@@ -18,15 +18,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var fragmentManager: FragmentManager
     private lateinit var activeFragment: Fragment
-    private lateinit var auth: FirebaseAuth
+    private var auth: FirebaseAuth? = null
     private lateinit var authListener: FirebaseAuth.AuthStateListener
-    companion object{
-         val PATH_SNAPSHOTS = "snapshots"
+
+    companion object {
+        const val PATH_SNAPSHOTS = "snapshots"
     }
 
     private val authResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_OK) {
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
                 Toast.makeText(this, "Bienvenido a Snapshots", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
@@ -44,29 +45,25 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    val proveedores = arrayListOf(
+    private val proveedores = arrayListOf(
         AuthUI.IdpConfig.EmailBuilder().build(),
-        AuthUI.IdpConfig.GoogleBuilder().build()
+        AuthUI.IdpConfig.GoogleBuilder().build(),
+        AuthUI.IdpConfig.FacebookBuilder().build()
     )
 
     private fun configuracionFireBaseAuth() {
         auth = FirebaseAuth.getInstance()
         authListener = FirebaseAuth.AuthStateListener {
             if (it.currentUser == null) {
-                try {
-                    authResult.launch(
-                        AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setIsSmartLockEnabled(false)
-                            .setAvailableProviders(proveedores)
-                            //.setTheme(R.style.LoginTheme)
-                            .build()
-                    )
-                } catch (e: FirebaseAuthException) {
-                    // Mostrar mensaje de error al usuario
-                    Toast.makeText(this, "Error de autenticación: ${e.message}", Toast.LENGTH_SHORT)
-                        .show()
-                }
+                authResult.launch(
+                    AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setIsSmartLockEnabled(false)
+                        .setAvailableProviders(proveedores)
+                        .setTheme(R.style.Theme_SnapshotsApp_)
+                        .build()
+                )
+
             }
         }
     }
@@ -93,8 +90,8 @@ class MainActivity : AppCompatActivity() {
             .add(R.id.FragmentPrincipal, inicioFragment, inicioFragment::class.java.name)
             .commit()
 
-        binding.btnNav.setOnItemSelectedListener {
-            when (it.itemId) {
+        binding.btnNav.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.inicio -> {
                     fragmentManager.beginTransaction().hide(activeFragment).show(inicioFragment)
                         .commit()
@@ -116,18 +113,23 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> false
             }
+        }
+        binding.btnNav.setOnItemReselectedListener {
+            when (it.itemId) {
+                R.id.inicio -> (inicioFragment as InicioAux).goToTop()
 
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        auth.addAuthStateListener(authListener)
+        auth?.addAuthStateListener(authListener)
     }
 
     override fun onPause() {
         super.onPause()
-        auth.removeAuthStateListener(authListener)
+        auth?.removeAuthStateListener(authListener)
     }
 
     /* override fun onStart() {

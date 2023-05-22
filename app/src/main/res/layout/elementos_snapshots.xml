@@ -9,35 +9,48 @@
         android:id="@+id/btnBorrar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:background="?attr/selectableItemBackground"
         android:src="@drawable/ic_borrar"
-        app:layout_constraintEnd_toEndOf="@id/ivFoto"
-        app:layout_constraintTop_toBottomOf="@id/ivFoto" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvTitulo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        android:textAppearance="?attr/textAppearanceHeadline6"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="18dp"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        app:layout_constraintBottom_toBottomOf="@id/btnBorrar"
+        app:layout_constraintEnd_toStartOf="@id/btnBorrar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Titulo de la instantanea" />
+        app:layout_constraintTop_toTopOf="@id/btnBorrar"
+        tools:text="Titulo de la foto" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/cbLike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:button="@drawable/ic_like"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/ivFoto"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintDimensionRatio="W,4:3"
+        android:layout_marginTop="8dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toTopOf="@id/cbLike"
+        app:layout_constraintDimensionRatio="H, 4:3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitulo" />
+        app:layout_constraintTop_toBottomOf="@id/btnBorrar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

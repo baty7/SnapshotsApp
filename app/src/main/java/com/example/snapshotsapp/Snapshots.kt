@@ -1,7 +1,9 @@
 package com.example.snapshotsapp
 
+import com.google.firebase.database.Exclude
+
 data class Snapshots(
-    var id: String = "",
+    @get:Exclude var id: String = "",
     var titulo: String = "",
     var fotoUrl: String = ""
 )
