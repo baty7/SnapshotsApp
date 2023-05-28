@@ -31,6 +31,7 @@
         app:layout_constraintTop_toTopOf="@id/btnBorrar"
         tools:text="Titulo de la foto" />
 
+
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/cbLike"
         android:layout_width="wrap_content"

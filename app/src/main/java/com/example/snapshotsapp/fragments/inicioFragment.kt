@@ -32,9 +32,6 @@ class inicioFragment : Fragment(), InicioAux {
     private lateinit var firebaseAdapter: FirebaseRecyclerAdapter<Snapshots, SnapshotsViewHolder>
     private lateinit var recyclerLayout: RecyclerView.LayoutManager
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +45,10 @@ class inicioFragment : Fragment(), InicioAux {
         super.onViewCreated(view, savedInstanceState)
 
         //Configurando consultas y crando instancia
-        val query = FirebaseDatabase.getInstance().reference.child(PATH_SNAPSHOTS)
+        val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+        //val query = FirebaseDatabase.getInstance().reference.child(PATH_SNAPSHOTS)
+        val query =
+            FirebaseDatabase.getInstance().reference.child(PATH_SNAPSHOTS).child(currentUser)
         val options =
             FirebaseRecyclerOptions.Builder<Snapshots>().setQuery(query) {
                 val snapshot = it.getValue(Snapshots::class.java)
@@ -123,14 +123,17 @@ class inicioFragment : Fragment(), InicioAux {
     private fun borrarFoto(snapshot: Snapshots) {
         confirmacionBorrar(snapshot) {
             //Borramos de la base de datos
-            val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots/")
+            val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+            val databaseReference = FirebaseDatabase.getInstance().reference
+                .child("snapshots/")
+                .child(currentUser)
             //Borramos del Storage
             val storageReference =
                 FirebaseStorage.getInstance().reference
                     .child("snapshots/")
                     .child(FirebaseAuth.getInstance().currentUser!!.uid)
                     .child(snapshot.id)
-            storageReference.delete().addOnCompleteListener {result ->
+            storageReference.delete().addOnCompleteListener { result ->
                 if (result.isSuccessful) {
                     databaseReference.child(snapshot.id).removeValue()
                 } else {
@@ -139,10 +142,8 @@ class inicioFragment : Fragment(), InicioAux {
                     ).show()
                 }
             }
-
         }
     }
-
     private fun confirmacionBorrar(snapshot: Snapshots, onConfirm: () -> Unit) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("¿Desea eliminar esta foto?")
@@ -166,11 +167,6 @@ class inicioFragment : Fragment(), InicioAux {
     override fun goToTop() {
         binding.rvItems.smoothScrollToPosition(0)
     }
-
-
-    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }*/
 
 
 }

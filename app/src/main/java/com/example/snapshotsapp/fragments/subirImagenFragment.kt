@@ -69,7 +69,6 @@ class subirImagenFragment : Fragment() {
         resultadoGaleria.launch(intent)
 
     }
-
     @SuppressLint("SetTextI18n")
     private fun publicarFoto() {
         binding.progressBar.visibility = View.VISIBLE
@@ -111,8 +110,9 @@ class subirImagenFragment : Fragment() {
     }
 
     private fun guardarFotoBaseDatos(key: String, url: String, titulo: String) {
-        val foto = Snapshots(titulo = titulo,  fotoUrl= url)
-        databaseReference.child(key).setValue(foto)
+        val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+        val foto = Snapshots(ownerUid = currentUser ,titulo = titulo,  fotoUrl= url)
+        databaseReference.child(currentUser).child(key).setValue(foto)
 
     }
 

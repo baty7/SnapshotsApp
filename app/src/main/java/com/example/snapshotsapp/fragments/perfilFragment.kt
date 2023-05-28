@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.example.snapshotsapp.FragmentAux
 import com.example.snapshotsapp.R
 import com.example.snapshotsapp.databinding.ActivityMainBinding
 import com.example.snapshotsapp.databinding.FragmentPerfilBinding
@@ -15,22 +16,20 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 
 
-class perfilFragment : Fragment() {
+class perfilFragment : Fragment(), FragmentAux {
     private lateinit var binding: FragmentPerfilBinding
-    private lateinit var bindingMain: ActivityMainBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPerfilBinding.inflate(inflater, container, false)
-        bindingMain = ActivityMainBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        obtenerUsuario()
+        refresh()
         cerrarSesionDialog()
     }
 
@@ -42,7 +41,6 @@ class perfilFragment : Fragment() {
                     .setPositiveButton("Cerrar") { _, _ ->
                         cerrarSesion()
                     }
-
                     .setNegativeButton("Cancelar", null)
                     .show()
             }
@@ -54,28 +52,17 @@ class perfilFragment : Fragment() {
             AuthUI.getInstance().signOut(it)
                 .addOnCompleteListener { task ->
                     Toast.makeText(context, "Hasta pronto", Toast.LENGTH_SHORT).show()
-                    //binding.tvName.text = ""
-                    //binding.tvEmail.text = ""
 
                     (activity?.findViewById(R.id.btn_nav) as? BottomNavigationView)?.selectedItemId =
                         R.id.inicio
-
-                    if (task.exception == null) {
-                        // Actualizar los datos del usuario después de cerrar sesión
-                        obtenerUsuario()
-                    } else {
-                        Toast.makeText(context, "Error al cerrar sesión", Toast.LENGTH_SHORT).show()
-                    }
-
                 }
-
         }
 
     }
-
-    private fun obtenerUsuario() {
-        val usuarioActual = FirebaseAuth.getInstance().currentUser
-        binding.tvName.text = usuarioActual?.displayName
-        binding.tvEmail.text = usuarioActual?.email
+    override fun refresh() {
+        with(binding) {
+            tvName.text = FirebaseAuth.getInstance().currentUser?.displayName
+            tvEmail.text = FirebaseAuth.getInstance().currentUser?.email
+        }
     }
 }

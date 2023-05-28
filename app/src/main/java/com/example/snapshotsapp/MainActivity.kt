@@ -13,10 +13,11 @@ import com.example.snapshotsapp.fragments.subirImagenFragment
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseUser
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var fragmentManager: FragmentManager
+    private var fragmentManager : FragmentManager? = null
     private lateinit var activeFragment: Fragment
     private var auth: FirebaseAuth? = null
     private lateinit var authListener: FirebaseAuth.AuthStateListener
@@ -40,8 +41,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         configuracionFireBaseAuth()
-        configuracionNavigationBar()
-
 
     }
 
@@ -61,16 +60,32 @@ class MainActivity : AppCompatActivity() {
                         .setIsSmartLockEnabled(false)
                         .setAvailableProviders(proveedores)
                         .setTheme(R.style.Theme_SnapshotsApp_)
+                        .setLogo(R.drawable.logoapp)
                         .build()
                 )
+                fragmentManager = null
+            } else {
+                val perfilFragment = fragmentManager?.findFragmentByTag(perfilFragment::class.java.name)
+                perfilFragment?.let {
+                    (it as FragmentAux).refresh()
+                }
 
+                if (fragmentManager == null) {
+                    fragmentManager= supportFragmentManager
+                    configuracionNavigationBar(fragmentManager!!)
+                }
             }
         }
     }
 
 
-    private fun configuracionNavigationBar() {
-        fragmentManager = supportFragmentManager
+    private fun configuracionNavigationBar(fragmentManager: FragmentManager) {
+        //fragmentManager = supportFragmentManager
+        fragmentManager?.let {
+            for (fragment in it.fragments) {
+                it.beginTransaction().remove(fragment!!).commit()
+            }
+        }
 
         val inicioFragment = inicioFragment()
         val perfilFragment = perfilFragment()
@@ -132,10 +147,6 @@ class MainActivity : AppCompatActivity() {
         auth?.removeAuthStateListener(authListener)
     }
 
-    /* override fun onStart() {
-         super.onStart()
-         auth.addAuthStateListener(authListener)
-     }*/
 
 
 }

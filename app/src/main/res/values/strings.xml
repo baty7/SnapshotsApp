@@ -1,11 +1,8 @@
 <resources>
-    <string name="app_name">SnapshotsApp</string>
+    <string name="app_name">Snapshots</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- Facebook Application ID, necesitado para utilizar Facebook Login -->
     <string name="facebook_application_id" translatable="false">781083563735913</string>
     <!-- ... otras cadenas ... -->
-
-
-
 </resources>
