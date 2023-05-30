@@ -149,7 +149,7 @@ class inicioFragment : Fragment(), InicioAux {
             .setTitle("¿Desea eliminar esta foto?")
             .setPositiveButton("Aceptar") { _, _ ->
                 onConfirm()
-                //borrarFoto(snapshot)
+
             }
             .setNegativeButton("Cancelar", null)
             .show()
@@ -160,7 +160,6 @@ class inicioFragment : Fragment(), InicioAux {
         fun setListener(snapshot: Snapshots) {
             //Boton delete para eliminar la foto
             binding.btnBorrar.setOnClickListener { borrarFoto(snapshot) }
-            //Boton de me gusta en la foto
         }
     }
 
